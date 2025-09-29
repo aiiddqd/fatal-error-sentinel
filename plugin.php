@@ -47,9 +47,17 @@ class Plugin
 		register_setting('fatal_error_sentinel_options', 'fatal_error_sentinel_config');
 		add_settings_section(
 			'fatal_error_sentinel_settings_general',
-			'General',
+			'General Settings',
 			function () {
-				echo '<p>Configure the general settings for Fatal Error Sentinel.</p>';
+				?>
+				<ul>
+					<li>GitHub: <a href="https://github.com/aiiddqd/fatal-error-sentinel">https://github.com/aiiddqd/fatal-error-sentinel</a></li>
+					<li>Support: <a href="https://github.com/aiiddqd/fatal-error-sentinel/issues">https://github.com/aiiddqd/fatal-error-sentinel/issues</a></li>
+					<li>Author: <a href="https://github.com/aiiddqd">https://github.com/aiiddqd</a></li>
+				</ul>
+				<p>Configure the general settings for Fatal Error Sentinel.</p>
+
+				<?php 
 			},
 			'fatal-error-sentinel'
 		);
@@ -62,13 +70,13 @@ class Plugin
 	public static function settings_page()
 	{
 		add_options_page(
-			'Fatal Error Sentinel Settings',
+			'Fatal Error Sentinel - Settings',
 			'Fatal Error Sentinel',
 			'manage_options',
 			'fatal-error-sentinel',
 			function () { ?>
 			<div class="wrap">
-				<h1>Fatal Error Sentinel Settings</h1>
+				<h1>Fatal Error Sentinel</h1>
 				<form method="post" action="options.php">
 					<?php
 						settings_fields('fatal_error_sentinel_options');
