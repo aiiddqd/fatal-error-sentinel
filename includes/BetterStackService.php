@@ -1,11 +1,7 @@
-<?php
-/**
- * Plugin Name: BetterStack for WP and for WooCommerce
- * Description: Simple integration for logger WP and BetterStack Logs. const BETTERSTACK_LOGS_SOURCE_TOKEN get here https://logs.betterstack.com/
- * Version: 0.3
- */
+<?php 
 
-namespace BetterStackPress;
+namespace FatalErrorSentinel;
+
 
 if ( defined( 'BETTERSTACK_LOGS_SOURCE_TOKEN' ) ) {
 	add_action( 'shutdown', function () {
