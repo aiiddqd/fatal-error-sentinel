@@ -25,14 +25,6 @@ class Plugin
     public static function init()
     {
 
-        add_action('admin_init', function () {
-            if (! isset($_GET['dddd']))
-                return;
-            va1r_dump(1);
-            exit;
-        });
-
-
         /**
          * simple test for check BetterStack
          *
@@ -44,16 +36,8 @@ class Plugin
             if (! isset($_GET['test_FatalErrorSentinel'])) {
                 return;
             }
+            asdfsdf2();
 
-            // $r = BetterStackService::sendLog([
-            //     'message' => 'Test Fatal Error Sentinel 2',
-            //     'nested' => [
-            //         'test_field' => 'test_value',
-            //     ],
-            // ]);
-            // var_dump($r);
-            // asdfsdf();
-            // exit;
         });
 
 
@@ -100,12 +84,10 @@ class Plugin
         if (isset($error['type'])) {
             $data['nested']['type'] = $error['type'];
         }
-        // error_log('test: '.print_r($data, true));
-        // var_dump($data); exit;
-        // require_once __DIR__.'/includes/BetterStackService.php';
 
-
-        BetterStackService::sendLog($data);
+        if (self::getConfig('betterstack_enabled', false)) {
+            BetterStackService::sendLog($data);
+        }
 
         do_action('fatal_error_sentinel_send_error', $data);
     }
