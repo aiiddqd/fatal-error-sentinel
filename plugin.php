@@ -25,53 +25,50 @@ class Plugin
     public static function init()
     {
 
+        add_action('admin_init', function () {
+            if (! isset($_GET['dddd']))
+                return;
+            va1r_dump(1);
+            exit;
+        });
+
+
+        /**
+         * simple test for check BetterStack
+         *
+         * 1. just run {{siteUrl}}/?test_BetterStackLogsIntegration
+         * 2. check logs https://telemetry.betterstack.com/
+         */
+        add_action('init', function () {
+
+            if (! isset($_GET['test_FatalErrorSentinel'])) {
+                return;
+            }
+
+            // $r = BetterStackService::sendLog([
+            //     'message' => 'Test Fatal Error Sentinel 2',
+            //     'nested' => [
+            //         'test_field' => 'test_value',
+            //     ],
+            // ]);
+            // var_dump($r);
+            // asdfsdf();
+            // exit;
+        });
+
+
         add_action('admin_menu', [self::class, 'settings_page']);
         add_action('admin_init', [self::class, 'add_settings']);
         add_filter('plugin_action_links_'.plugin_basename(__FILE__), [self::class, 'addSettingsLink']);
 
         require_once __DIR__.'/includes/TelegramService.php';
         require_once __DIR__.'/includes/EmailService.php';
+        require_once __DIR__.'/includes/BetterStackService.php';
 
         self::catchErrors();
 
-        add_filter('testeroid_tests', function($tests) {
-            $tests['fatal-error-sentinel'] = function(){
-
-                return true;
-            };
-            return $tests;
-        });
-
     }
 
-    public static function catchErrors()
-    {
-        if (! self::isEnabled()) {
-            return;
-        }
-
-        add_action('shutdown', function () {
-
-            $error = error_get_last();
-
-            if (is_null($error)) {
-                return;
-            }
-
-            if ($error['type'] != E_ERROR) {
-                return;
-            }
-
-            self::send_error($error);
-        }, 1);
-
-        add_filter('wp_php_error_message', function ($message, $error) {
-
-            self::send_error($error);
-
-            return $message;
-        }, 11, 2);
-    }
 
     public static function send_error($error)
     {
@@ -103,8 +100,44 @@ class Plugin
         if (isset($error['type'])) {
             $data['nested']['type'] = $error['type'];
         }
-        error_log('test: ' . print_r($data, true));
+        // error_log('test: '.print_r($data, true));
+        // var_dump($data); exit;
+        // require_once __DIR__.'/includes/BetterStackService.php';
+
+
+        BetterStackService::sendLog($data);
+
         do_action('fatal_error_sentinel_send_error', $data);
+    }
+
+
+    public static function catchErrors()
+    {
+        if (! self::isEnabled()) {
+            return;
+        }
+
+        add_action('shutdown', function () {
+
+            $error = error_get_last();
+
+            if (is_null($error)) {
+                return;
+            }
+
+            if ($error['type'] != E_ERROR) {
+                return;
+            }
+
+            self::send_error($error);
+        }, 1);
+
+        add_filter('wp_php_error_message', function ($message, $error) {
+
+            self::send_error($error);
+
+            return $message;
+        }, 11, 2);
     }
 
     public static function isEnabled()
@@ -114,6 +147,10 @@ class Plugin
         }
 
         if (self::getConfig('email_enabled', false)) {
+            return true;
+        }
+
+        if (self::getConfig('betterstack_enabled', false)) {
             return true;
         }
 
