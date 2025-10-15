@@ -66,7 +66,7 @@ class Plugin
         if (isset($message[1])) {
             $data['nested']['stack_trace'] = explode("\n", trim($message[1]));
         } else {
-            $data['nested']['debug_backtrace'] = debug_backtrace();
+            $data['nested']['debug_backtrace'] = $error;
         }
 
         if ($user_id = get_current_user_id()) {
