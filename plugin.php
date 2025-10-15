@@ -9,7 +9,7 @@
  * Author URI: https://github.com/aiiddqd
  * Domain Path: /languages
  * Text Domain: fatal-error-sentinel
- * Version: 0.3.250928
+ * Version: 0.3.251015
  */
 
 namespace FatalErrorSentinel;
@@ -65,6 +65,8 @@ class Plugin
 
         if (isset($message[1])) {
             $data['nested']['stack_trace'] = explode("\n", trim($message[1]));
+        } else {
+            $data['nested']['debug_backtrace'] = debug_backtrace();
         }
 
         if ($user_id = get_current_user_id()) {
