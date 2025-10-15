@@ -1,88 +1,96 @@
-<?php 
+<?php
 
 namespace FatalErrorSentinel;
 
+BetterStackService::init();
 
-if ( defined( 'BETTERSTACK_LOGS_SOURCE_TOKEN' ) ) {
-	add_action( 'shutdown', function () {
+class BetterStackService
+{
+    public static function init()
+    {
+        add_action('admin_init', [self::class, 'add_settings']);
+    }
 
-		$error = error_get_last();
+    public static function sendLog($data)
+    {
+        $json = json_encode($data);
+        $host = Plugin::getConfig('betterstack_url', '');
+        //check $host has https or domain
+        if (empty($host) || (! str_starts_with($host, 'https://') && ! str_starts_with($host, 'http://'))) {
+            $host = 'https://' . $host;
+        }
 
-		if ( is_null( $error ) ) {
-			return;
-		}
+        $result = wp_remote_post($host, [
+            'headers' => [
+                'Authorization' => 'Bearer '.Plugin::getConfig('betterstack_token'),
+                'Content-Type' => 'application/json'
+            ],
+            'body' => $json,
+        ]);
 
-		if ( $error['type'] != E_ERROR ) {
-			return;
-		}
+        return $result;
+    }
 
-		send_to_betterstack( $error );
-	}, 1 );
+    public static function add_settings()
+    {
 
-	add_filter( 'wp_php_error_message', function ($message, $error) {
+        add_settings_section(
+            'fatal_error_sentinel_betterstack_settings',
+            'BetterStack Logs Integration',
+            function () {
+                ?>
+                <p>Configure the BetterStack Logs settings for Fatal Error Sentinel.</p>
+                <p>Add source here <a href="https://telemetry.betterstack.com/" target="_blank">https://telemetry.betterstack.com/</a></p>
+                <?php
+            },
+            'fatal-error-sentinel'
+        );
 
-		send_to_betterstack( $error );
+        add_settings_field(
+            'betterstack_enabled',
+            'Enable BetterStack Logs Integration',
+            function () {
+                $checked = Plugin::getConfig('betterstack_enabled', false) ? 'checked' : '';
+                printf(
+                    '<input type="checkbox" name="%s" value="1" %s>',
+                    esc_attr(Plugin::getConfigFieldName('betterstack_enabled')),
+                    $checked
+                );
+                echo '<p class="description">Check to enable BetterStack Logs integration for fatal errors.</p>';
+            },
+            'fatal-error-sentinel',
+            'fatal_error_sentinel_betterstack_settings'
+        );
 
-		return $message;
-	}, 11, 2 );
+        add_settings_field(
+            'betterstack_token',
+            'BetterStack Logs Source Token',
+            function () {
+                printf(
+                    '<input type="text" name="%s" value="%s" class="regular-text">',
+                    esc_attr(Plugin::getConfigFieldName('betterstack_token')),
+                    esc_attr(Plugin::getConfig('betterstack_token', ''))
+                );
+                echo '<p class="description">Enter the BetterStack Logs Source Token used to send logs. You can find this token in your BetterStack Logs account.</p>';
+            },
+            'fatal-error-sentinel',
+            'fatal_error_sentinel_betterstack_settings'
+        );
 
+        //add settings field - url
+        add_settings_field(
+            'betterstack_url',
+            'BetterStack Logs URL',
+            function () {
+                printf(
+                    '<input type="text" name="%s" value="%s" class="regular-text">',
+                    esc_attr(Plugin::getConfigFieldName('betterstack_url')),
+                    esc_attr(Plugin::getConfig('betterstack_url', ''))
+                );
+                echo '<p class="description">Enter the BetterStack Logs URL';
+            },
+            'fatal-error-sentinel',
+            'fatal_error_sentinel_betterstack_settings'
+        );
+    }
 }
-
-
-function send_to_betterstack( $error ) {
-	$message = explode( 'Stack trace:', $error['message'] );
-
-	$data = [ 
-		'message' => trim( $message[0] ),
-		'nested' => [],
-	];
-
-	if ( isset( $message[1] ) ) {
-		$data['nested']['stack_trace'] = explode( "\n", trim( $message[1] ) );
-	}
-
-	if ( $user_id = get_current_user_id() ) {
-		$data['nested']['user_id'] = $user_id;
-	}
-
-	if ( isset( $_SERVER['REQUEST_URI'] ) ) {
-		$data['nested']['request'] = $_SERVER['REQUEST_URI'];
-	}
-
-	if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-		$data['nested']['referer'] = $_SERVER['HTTP_REFERER'];
-	} else {
-		$data['nested']['referer'] = 'unknown';
-	}
-
-	if ( isset( $error['type'] ) ) {
-		$data['nested']['type'] = $error['type'];
-	}
-
-	$json = json_encode( $data );
-
-	$result = wp_remote_post( 'https://in.logs.betterstack.com', [ 
-		'headers' => [ 
-			'Authorization' => 'Bearer ' . BETTERSTACK_LOGS_SOURCE_TOKEN,
-			'Content-Type' => 'application/json'
-		],
-		'body' => $json,
-	] );
-
-	return $result;
-}
-
-/**
- * simple test for check BetterStack
- * 
- * 1. just run {{siteUrl}}/?test_BetterStackLogsIntegration
- * 2. check log https://logs.betterstack.com/
- */
-add_action( 'init', function () {
-
-	if ( ! isset( $_GET['test_BetterStackLogsIntegration'] ) ) {
-		return;
-	}
-
-	test_wrong_function();
-} );

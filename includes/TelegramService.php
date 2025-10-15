@@ -16,7 +16,7 @@ class TelegramService
 
         add_settings_section(
             'fatal_error_sentinel_telegram_settings',
-            'Telegram',
+            'Telegram Notifications',
             function () {
                 echo '<p>Configure the Telegram settings for Fatal Error Sentinel.</p>';
             },
