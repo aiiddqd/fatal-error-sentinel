@@ -9,7 +9,7 @@
  * Author URI: https://github.com/aiiddqd
  * Domain Path: /languages
  * Text Domain: fatal-error-sentinel
- * Version: 0.3.251015
+ * Version: 0.3.251016
  */
 
 namespace FatalErrorSentinel;
@@ -168,6 +168,7 @@ class Plugin
                 <li>Author: <a href="https://github.com/aiiddqd">https://github.com/aiiddqd</a></li>
             </ul>
             <p>Configure the general settings for Fatal Error Sentinel.</p>
+            <p>Test link: <a href="<?= add_query_arg('test_FatalErrorSentinel', '1', admin_url('options-general.php?page=fatal-error-sentinel')) ?>" target="_blank">Check</a></p>
 
             <?php
             },
