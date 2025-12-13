@@ -78,10 +78,6 @@ final class Plugin
         add_action('admin_init', [$this, 'add_settings'], 5);
         add_filter('plugin_action_links_'.plugin_basename(__FILE__), [$this, 'addSettingsLink']);
 
-        // require_once __DIR__.'/includes/TelegramService.php';
-        // require_once __DIR__.'/includes/EmailService.php';
-        // require_once __DIR__.'/includes/BetterStackService.php';
-
         $this->catchErrors();
     }
 
@@ -154,7 +150,7 @@ final class Plugin
             }
 
             $this->send_error($error);
-        }, 1);
+        }, 0);
 
         add_filter('wp_php_error_message', function ($message, $error) {
             $this->send_error($error);
