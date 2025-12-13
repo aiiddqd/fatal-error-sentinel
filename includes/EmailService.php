@@ -27,10 +27,10 @@ class EmailService
             'email_enabled',
             'Enable Email Notifications',
             function () {
-                $checked = Plugin::getConfig('email_enabled', false) ? 'checked' : '';
+                $checked = fatal_error_sentinel()->getConfig('email_enabled', false) ? 'checked' : '';
                 printf(
                     '<input type="checkbox" name="%s" value="1" %s>',
-                    esc_attr(Plugin::getConfigFieldName('email_enabled')),
+                    esc_attr(fatal_error_sentinel()->getConfigFieldName('email_enabled')),
                     $checked
                 );
                 echo '<p class="description">Check to enable email notifications for fatal errors.</p>';
@@ -45,8 +45,8 @@ class EmailService
             function () {
                 printf(
                     '<input type="email" name="%s" value="%s" class="regular-text">',
-                    esc_attr(Plugin::getConfigFieldName('notification_email')),
-                    esc_attr(Plugin::getConfig('notification_email', get_option('admin_email')))
+                    esc_attr(fatal_error_sentinel()->getConfigFieldName('notification_email')),
+                    esc_attr(fatal_error_sentinel()->getConfig('notification_email', get_option('admin_email')))
                 );
                 echo '<p class="description">Enter the email address where fatal error notifications will be sent. Defaults to the site admin email if left blank.</p>';
             },

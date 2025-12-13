@@ -8,7 +8,7 @@ class TelegramService
 {
     public static function init()
     {
-        add_action('admin_init', [self::class, 'add_settings']);
+        add_action('admin_init', [self::class, 'add_settings'], 20);
     }
 
     public static function add_settings()
@@ -27,10 +27,10 @@ class TelegramService
             'telegram_enabled',
             'Enable Telegram Notifications',
             function () {
-                $checked = Plugin::getConfig('telegram_enabled', false) ? 'checked' : '';
+                $checked = fatal_error_sentinel()->getConfig('telegram_enabled', false) ? 'checked' : '';
                 printf(
                     '<input type="checkbox" name="%s" value="1" %s>',
-                    esc_attr(Plugin::getConfigFieldName('telegram_enabled')),
+                    esc_attr(fatal_error_sentinel()->getConfigFieldName('telegram_enabled')),
                     $checked
                 );
                 echo '<p class="description">Check to enable Telegram notifications for fatal errors.</p>';
@@ -45,8 +45,8 @@ class TelegramService
             function () {
                 printf(
                     '<input type="text" name="%s" value="%s" class="regular-text">',
-                    esc_attr(Plugin::getConfigFieldName('telegram_bot_token')),
-                    esc_attr(Plugin::getConfig('telegram_bot_token', ''))
+                    esc_attr(fatal_error_sentinel()->getConfigFieldName('telegram_bot_token')),
+                    esc_attr(fatal_error_sentinel()->getConfig('telegram_bot_token', ''))
                 );
                 echo '<p class="description">Enter the Telegram Bot Token used to send notifications.</p>';
             },
@@ -60,8 +60,8 @@ class TelegramService
             function () {
                 printf(
                     '<input type="text" name="%s" value="%s" class="regular-text">',
-                    esc_attr(Plugin::getConfigFieldName('telegram_chat_id')),
-                    esc_attr(Plugin::getConfig('telegram_chat_id', ''))
+                    esc_attr(fatal_error_sentinel()->getConfigFieldName('telegram_chat_id')),
+                    esc_attr(fatal_error_sentinel()->getConfig('telegram_chat_id', ''))
                 );
                 echo '<p class="description">Enter the Telegram Chat ID where notifications will be sent.</p>';
             },
