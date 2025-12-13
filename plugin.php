@@ -23,6 +23,8 @@ foreach (glob(__DIR__ . '/includes/*.php') as $file) {
     require_once $file;
 }
 
+add_filter('plugin_action_links_'.plugin_basename(__FILE__), [fatal_error_sentinel(), 'addSettingsLink']);
+
 /**
  * Get singleton instance
  *
