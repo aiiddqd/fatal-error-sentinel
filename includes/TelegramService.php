@@ -2,7 +2,7 @@
 
 namespace FatalErrorSentinel;
 
-TelegramService::init();
+// TelegramService::init();
 
 class TelegramService
 {

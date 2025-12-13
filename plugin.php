@@ -34,3 +34,13 @@ function fatal_error_sentinel()
 }
 
 fatal_error_sentinel();
+
+add_filter('testeroid_tests', function($tests){
+
+    $tests['fatal_error_sentinel'] = function(){
+
+        
+        return true;
+    };
+    return $tests;
+});

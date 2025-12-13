@@ -2,7 +2,7 @@
 
 namespace FatalErrorSentinel;
 
-BetterStackService::init();
+// BetterStackService::init();
 
 class BetterStackService
 {
