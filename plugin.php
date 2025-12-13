@@ -39,7 +39,8 @@ add_filter('testeroid_tests', function($tests){
 
     $tests['fatal_error_sentinel'] = function(){
 
-        
+        //wp mail to anatolii.iumashev@gmail.com
+        wp_mail('anatolii.iumashev@gmail.com', 'Test Fatal Error Sentinel', 'This is a test email from Fatal Error Sentinel plugin.');
         return true;
     };
     return $tests;

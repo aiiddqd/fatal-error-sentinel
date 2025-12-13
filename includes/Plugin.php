@@ -33,8 +33,9 @@ final class Plugin
     /**
      * Prevent unserialization
      */
-    private function __wakeup()
+    public function __wakeup()
     {
+        throw new \BadMethodCallException('Cannot unserialize singleton.');
     }
 
     /**
