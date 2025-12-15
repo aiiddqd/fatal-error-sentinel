@@ -23,17 +23,71 @@ class TelegramService
     public static function send_error($error)
     {
 
-        $website = get_bloginfo('name').' ('.get_bloginfo('url').')';
-
-        $errorToText = EmailService::format_error_for_email($error);
-
         $chat_id = fatal_error_sentinel()->getConfig('telegram_chat_id', '');
-        if(empty($chat_id)) {
+        if (empty($chat_id)) {
             return;
         }
+        $website = get_bloginfo('name').' ('.get_bloginfo('url').')';
+
+        $errorToText = self::format_error_to_text($error);
 
         self::send_telegram_message($chat_id, $errorToText);
     }
+
+    public static function format_error_to_text($error)
+    {
+        if (strpos($error['message'], 'Stack trace:') !== false) {
+            $parts = explode('Stack trace:', $error['message'], 2);
+            if (isset($parts[0])) {
+                $message = trim(esc_html($parts[0]));
+            }
+            if (isset($parts[1])) {
+                $stackTrace = trim(esc_html($parts[1]));
+            }
+        } else {
+            $message = esc_html($error['message']);
+            $stackTrace = null;
+        }
+
+        // $message - can't parse entities: Character '(' is reserved and must be escaped with the preceding '\\'"}
+
+        $website = get_bloginfo('url').' ('.get_bloginfo('name').')';
+        if ($_SERVER['REQUEST_URI']) {
+            $request = $_SERVER['REQUEST_URI'];
+        } else {
+            $request = 'unknown';
+        }
+
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            $referrer = urlencode($_SERVER['HTTP_REFERER']);
+        } else {
+            $referrer = 'unknown';
+        }
+
+        $output = "\n";
+        $output .= "Fatal Error Detected: $website\n";
+        // $output .= PHP_EOL."<hr/>";
+        $output .= "<pre>";
+        $output .= "Message: ".$message;
+        $output .= PHP_EOL;
+        if ($stackTrace) {
+            $output .= "Stack Trace:\n$stackTrace\n";
+        }
+        $output .= "File: ".(isset($error['file']) ? $error['file'] : 'Unknown')."\n";
+        $output .= "Line: ".(isset($error['line']) ? $error['line'] : 'Unknown')."\n";
+        $output .= "Type: ".(isset($error['type']) ? $error['type'] : 'Unknown')."\n";
+        if ($current_user_id = get_current_user_id()) {
+            $output .= "User ID: ".$current_user_id."\n";
+        }
+        $output .= 'Request: '.$request."\n";
+        $output .= 'Referrer: '.$referrer."\n";
+
+        $output .= "Timestamp: ".date('Y-m-d H:i:s')."\n";
+        $output .= "</pre>";
+
+        return $output;
+    }
+
 
     //handle_telegram_webhook
     public static function handle_telegram_webhook($request)
