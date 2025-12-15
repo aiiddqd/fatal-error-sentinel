@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Fatal Error Sentinel
- * Description: Notifications about fatal and critical errors in BetterStack Logs, Email or Telegram
+ * Description: Notifications about fatal and critical errors in Email, BetterStack Logs or Telegram
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Plugin URI: https://github.com/aiiddqd/fatal-error-sentinel

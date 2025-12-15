@@ -125,6 +125,10 @@ final class Plugin
             EmailService::send_email_notification($error);
         }
 
+        if ($this->getConfig('telegram_enabled', false)) {
+            TelegramService::send_error($error);
+        }
+
         if ($this->getConfig('betterstack_enabled', false)) {
             BetterStackService::sendLog($data);
         }
@@ -216,6 +220,8 @@ final class Plugin
             'General Settings',
             function () {
                 ?>
+            <p>Configure the general settings for Fatal Error Sentinel.</p>
+
             <ul>
                 <li>GitHub: <a
                         href="https://github.com/aiiddqd/fatal-error-sentinel">https://github.com/aiiddqd/fatal-error-sentinel</a>
@@ -223,9 +229,7 @@ final class Plugin
                 <li>Support: <a
                         href="https://github.com/aiiddqd/fatal-error-sentinel/issues">https://github.com/aiiddqd/fatal-error-sentinel/issues</a>
                 </li>
-                <li>Author: <a href="https://github.com/aiiddqd">https://github.com/aiiddqd</a></li>
             </ul>
-            <p>Configure the general settings for Fatal Error Sentinel.</p>
             <p>Test link: <a
                     href="<?= add_query_arg('test_FatalErrorSentinel', '1', admin_url('options-general.php?page=fatal-error-sentinel')) ?>"
                     target="_blank">Check</a></p>

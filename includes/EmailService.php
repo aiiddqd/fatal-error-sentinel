@@ -24,7 +24,7 @@ class EmailService
 
     }
 
-    private static function format_error_for_email($error)
+    public static function format_error_for_email($error)
     {
         if (strpos($error['message'], 'Stack trace:') !== false) {
             $parts = explode('Stack trace:', $error['message'], 2);
@@ -40,10 +40,21 @@ class EmailService
         }
 
         $website = get_bloginfo('url').' ('.get_bloginfo('name').')';
+        if ($_SERVER['REQUEST_URI']) {
+            $request = $_SERVER['REQUEST_URI'];
+        } else {
+            $request = 'unknown';
+        }
+
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            $referrer = urlencode($_SERVER['HTTP_REFERER']);
+        } else {
+            $referrer = 'unknown';
+        }
 
         $output = "\n";
-        $output .= "Fatal Error Detected: $website\n" . "<br/>";
-        $output .= PHP_EOL . "<hr/>";
+        $output .= "Fatal Error Detected: $website\n"."<br/>";
+        $output .= PHP_EOL."<hr/>";
         $output .= "<pre>";
         $output .= "Message: ".$message;
         $output .= PHP_EOL;
@@ -56,6 +67,9 @@ class EmailService
         if ($current_user_id = get_current_user_id()) {
             $output .= "User ID: ".$current_user_id."\n";
         }
+        $output .= 'Request: '.$request."\n";
+        $output .= 'Referrer: '.$referrer."\n";
+
         $output .= "Timestamp: ".date('Y-m-d H:i:s')."\n";
         $output .= "</pre>";
 
