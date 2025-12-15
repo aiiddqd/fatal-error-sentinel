@@ -121,6 +121,10 @@ final class Plugin
             $data['nested']['type'] = $error['type'];
         }
 
+        if ($this->getConfig('email_enabled', false)) {
+            EmailService::send_email_notification($error);
+        }
+
         if ($this->getConfig('betterstack_enabled', false)) {
             BetterStackService::sendLog($data);
         }
@@ -135,6 +139,8 @@ final class Plugin
      */
     public function catchErrors()
     {
+
+
         if (! $this->isEnabled()) {
             return;
         }
@@ -142,7 +148,7 @@ final class Plugin
         add_action('shutdown', function () {
             $error = error_get_last();
 
-            if (is_null($error)) {
+            if (empty($error['type'])) {
                 return;
             }
 
@@ -150,14 +156,15 @@ final class Plugin
                 return;
             }
 
+
             $this->send_error($error);
         }, 0);
 
-        add_filter('wp_php_error_message', function ($message, $error) {
-            $this->send_error($error);
+        // add_filter('wp_php_error_message', function ($message, $error) {
+        //     $this->send_error($error);
 
-            return $message;
-        }, 11, 2);
+        //     return $message;
+        // }, 11, 2);
     }
 
     /**

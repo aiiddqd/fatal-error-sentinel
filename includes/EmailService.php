@@ -11,6 +11,59 @@ class EmailService
         add_action('admin_init', [self::class, 'add_settings']);
     }
 
+    public static function send_email_notification($error)
+    {
+
+        $email = fatal_error_sentinel()->getConfig('notification_email', get_option('admin_email'));
+
+        $website = get_bloginfo('name').' ('.get_bloginfo('url').')';
+
+        $errorToText = self::format_error_for_email($error);
+
+        wp_mail($email, 'Fatal Error: '.$website, $errorToText);
+
+    }
+
+    private static function format_error_for_email($error)
+    {
+
+              // Optionally include stack trace if present
+        if (strpos($error['message'], 'Stack trace:') !== false) {
+            $parts = explode('Stack trace:', $error['message'], 2);
+            if (isset($parts[0])) {
+                $message = trim($parts[0]);
+            }
+            if (isset($parts[1])) {
+                $stackTrace = trim($parts[1]);
+            }
+        } else {
+            $message = $error['message'];
+            $stackTrace = null;
+        }
+
+        $website = get_bloginfo('url') . ' (' . get_bloginfo('name') . ')';
+
+        $output = "Fatal Error Detected: $website" . "\n\n\n";
+        $output .= PHP_EOL;
+        $output .= "# Message: ".$message;
+        $output .= PHP_EOL;
+        $output .= "<pre>";
+        if ($stackTrace) {
+            $output .= "Stack Trace:\n$stackTrace\n";
+        }
+        $output .= "File: ".(isset($error['file']) ? $error['file'] : 'Unknown')."\n";
+        $output .= "Line: ".(isset($error['line']) ? $error['line'] : 'Unknown')."\n";
+        $output .= "Type: ".(isset($error['type']) ? $error['type'] : 'Unknown')."\n";
+        if($current_user_id = get_current_user_id()) {
+            $output .= "User ID: ".$current_user_id."\n";
+        }
+        $output .= "</pre>";
+
+        $output .= "Timestamp: ".date('Y-m-d H:i:s')."\n";
+
+        return $output;
+    }
+
     public static function add_settings()
     {
 

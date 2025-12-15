@@ -17,11 +17,16 @@ if (! defined('ABSPATH')) {
 }
 
 // glob from includes
-foreach (glob(__DIR__ . '/includes/*.php') as $file) {
+foreach (glob(__DIR__.'/includes/*.php') as $file) {
     require_once $file;
 }
 
 add_filter('plugin_action_links_'.plugin_basename(__FILE__), [fatal_error_sentinel(), 'addSettingsLink']);
+
+add_action('wp_mail_failed', function ($wp_error) {
+    error_log('Mail error: '.$wp_error->get_error_message());
+}, 10, 1);
+
 
 /**
  * Get singleton instance
@@ -34,14 +39,3 @@ function fatal_error_sentinel()
 }
 
 fatal_error_sentinel();
-
-add_filter('testeroid_tests', function($tests){
-
-    $tests['fatal_error_sentinel'] = function(){
-
-        //wp mail to anatolii.iumashev@gmail.com
-        wp_mail('anatolii.iumashev@gmail.com', 'Test Fatal Error Sentinel', 'This is a test email from Fatal Error Sentinel plugin.');
-        return true;
-    };
-    return $tests;
-});
