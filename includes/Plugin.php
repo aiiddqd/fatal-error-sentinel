@@ -158,7 +158,7 @@ final class Plugin
 
 
             $this->send_error($error);
-        }, 0);
+        }, 11);
 
         // add_filter('wp_php_error_message', function ($message, $error) {
         //     $this->send_error($error);

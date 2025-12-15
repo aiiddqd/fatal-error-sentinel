@@ -26,8 +26,6 @@ class EmailService
 
     private static function format_error_for_email($error)
     {
-
-              // Optionally include stack trace if present
         if (strpos($error['message'], 'Stack trace:') !== false) {
             $parts = explode('Stack trace:', $error['message'], 2);
             if (isset($parts[0])) {
@@ -41,25 +39,25 @@ class EmailService
             $stackTrace = null;
         }
 
-        $website = get_bloginfo('url') . ' (' . get_bloginfo('name') . ')';
+        $website = get_bloginfo('url').' ('.get_bloginfo('name').')';
 
-        $output = "Fatal Error Detected: $website" . "\n\n\n";
-        $output .= PHP_EOL;
-        $output .= "# Message: ".$message;
-        $output .= PHP_EOL;
+        $output = "\n";
+        $output .= "Fatal Error Detected: $website\n" . "<br/>";
+        $output .= PHP_EOL . "<hr/>";
         $output .= "<pre>";
+        $output .= "Message: ".$message;
+        $output .= PHP_EOL;
         if ($stackTrace) {
             $output .= "Stack Trace:\n$stackTrace\n";
         }
         $output .= "File: ".(isset($error['file']) ? $error['file'] : 'Unknown')."\n";
         $output .= "Line: ".(isset($error['line']) ? $error['line'] : 'Unknown')."\n";
         $output .= "Type: ".(isset($error['type']) ? $error['type'] : 'Unknown')."\n";
-        if($current_user_id = get_current_user_id()) {
+        if ($current_user_id = get_current_user_id()) {
             $output .= "User ID: ".$current_user_id."\n";
         }
-        $output .= "</pre>";
-
         $output .= "Timestamp: ".date('Y-m-d H:i:s')."\n";
+        $output .= "</pre>";
 
         return $output;
     }
