@@ -27,6 +27,7 @@ class TelegramService
         if (empty($chat_id)) {
             return;
         }
+        
         $website = get_bloginfo('name').' ('.get_bloginfo('url').')';
 
         $errorToText = self::format_error_to_text($error);
