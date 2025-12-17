@@ -39,13 +39,3 @@ function fatal_error_sentinel()
 }
 
 fatal_error_sentinel();
-
-
-add_filter('testeroid_tests', function ($tests) {
-    $tests['fatal_error_sentinel'] = function () {
-        $r = wp_mail('m@wpcraft.ru', 'Test Fatal Error Sentinel BetterStack Logs Integration', 'This is a test message for BetterStack integration.');
-        var_dump($r);
-        return true;
-    };
-    return $tests;
-});
