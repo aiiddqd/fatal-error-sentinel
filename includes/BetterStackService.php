@@ -51,7 +51,7 @@ class BetterStackService
     public static function send_wp_error($wp_error)
     {
         $data = [
-            'message' =>sprintf("Ошибка отправки почты: %s", $wp_error->get_error_message()),
+            'message' => sprintf("Ошибка отправки почты: %s", $wp_error->get_error_message()),
         ];
 
         self::sendLog($data);
