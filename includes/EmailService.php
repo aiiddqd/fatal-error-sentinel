@@ -13,7 +13,6 @@ class EmailService
 
     public static function send_email_notification($error)
     {
-
         $email = fatal_error_sentinel()->getConfig('notification_email', get_option('admin_email'));
 
         $website = get_bloginfo('name').' ('.get_bloginfo('url').')';
@@ -40,7 +39,7 @@ class EmailService
         }
 
         $website = get_bloginfo('url').' ('.get_bloginfo('name').')';
-        if ($_SERVER['REQUEST_URI']) {
+        if (isset($_SERVER['REQUEST_URI'])) {
             $request = $_SERVER['REQUEST_URI'];
         } else {
             $request = 'unknown';

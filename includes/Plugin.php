@@ -59,6 +59,8 @@ final class Plugin
     public function init()
     {
 
+        $this->catchErrors();
+
         /**
          * simple test for check BetterStack
          *
@@ -74,67 +76,12 @@ final class Plugin
 
         });
 
-
         add_action('admin_menu', [$this, 'settings_page']);
         add_action('admin_init', [$this, 'add_settings'], 5);
         add_filter('plugin_action_links_'.plugin_basename(__FILE__), [$this, 'addSettingsLink']);
 
-        $this->catchErrors();
     }
 
-    /**
-     * Send error notification
-     *
-     * @param array $error
-     * @return void
-     */
-    public function send_error($error)
-    {
-        $message = explode('Stack trace:', $error['message']);
-
-        $data = [
-            'message' => trim($message[0]),
-            'nested' => [],
-        ];
-
-        if (isset($message[1])) {
-            $data['nested']['stack_trace'] = explode("\n", trim($message[1]));
-        } else {
-            $data['nested']['debug_backtrace'] = $error;
-        }
-
-        if ($user_id = get_current_user_id()) {
-            $data['nested']['user_id'] = $user_id;
-        }
-
-        if (isset($_SERVER['REQUEST_URI'])) {
-            $data['nested']['request'] = $_SERVER['REQUEST_URI'];
-        }
-
-        if (isset($_SERVER['HTTP_REFERER'])) {
-            $data['nested']['referer'] = $_SERVER['HTTP_REFERER'];
-        } else {
-            $data['nested']['referer'] = 'unknown';
-        }
-
-        if (isset($error['type'])) {
-            $data['nested']['type'] = $error['type'];
-        }
-
-        if ($this->getConfig('email_enabled', false)) {
-            EmailService::send_email_notification($error);
-        }
-
-        if ($this->getConfig('telegram_enabled', false)) {
-            TelegramService::send_error($error);
-        }
-
-        if ($this->getConfig('betterstack_enabled', false)) {
-            BetterStackService::sendLog($data);
-        }
-
-        do_action('fatal_error_sentinel_send_error', $data);
-    }
 
     /**
      * Catch fatal errors
@@ -143,8 +90,6 @@ final class Plugin
      */
     public function catchErrors()
     {
-
-
         if (! $this->isEnabled()) {
             return;
         }
@@ -160,16 +105,41 @@ final class Plugin
                 return;
             }
 
-
-            $this->send_error($error);
+            $this->send_php_error($error);
         }, 11);
 
-        // add_filter('wp_php_error_message', function ($message, $error) {
-        //     $this->send_error($error);
+        add_action('wp_mail_failed', function ($wp_error) {
+            if ($this->getConfig('telegram_enabled', false)) {
+                TelegramService::send_wp_error($wp_error);
+            }
 
-        //     return $message;
-        // }, 11, 2);
+            if ($this->getConfig('betterstack_enabled', false)) {
+                BetterStackService::send_wp_error($wp_error);
+            }
+        });
     }
+
+    /**
+     * Send error notification
+     *
+     * @param array $error
+     * @return void
+     */
+    public function send_php_error($error)
+    {
+        if ($this->getConfig('email_enabled', false)) {
+            EmailService::send_email_notification($error);
+        }
+
+        if ($this->getConfig('telegram_enabled', false)) {
+            TelegramService::send_error($error);
+        }
+
+        if ($this->getConfig('betterstack_enabled', false)) {
+            BetterStackService::send_error($error);
+        }
+    }
+
 
     /**
      * Check if plugin is enabled
