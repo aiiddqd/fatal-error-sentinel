@@ -11,7 +11,13 @@ class BetterStackService
         add_action('admin_init', [self::class, 'add_settings'], 30);
     }
 
-    //send fatal error
+    /**
+     * Send a fatal error to the BetterStack logging service.
+     *
+     * @param array $error Error data, including message and optional type.
+     *
+     * @return void
+     */
     public static function send_error($error)
     {
         $message = explode('Stack trace:', $error['message']);
