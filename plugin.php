@@ -9,7 +9,7 @@
  * Author URI: https://github.com/aiiddqd
  * Domain Path: /languages
  * Text Domain: fatal-error-sentinel
- * Version: 0.3.251217
+ * Version: 0.4.251218
  */
 
 if (! defined('ABSPATH')) {
