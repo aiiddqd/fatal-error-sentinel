@@ -13,7 +13,6 @@ class EmailService
 
     public static function send_email_notification($error)
     {
-
         $email = fatal_error_sentinel()->getConfig('notification_email', get_option('admin_email'));
 
         $website = get_bloginfo('name').' ('.get_bloginfo('url').')';

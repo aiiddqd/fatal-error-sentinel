@@ -20,15 +20,24 @@ class TelegramService
         });
     }
 
-    public static function send_error($error)
+    public static function send_wp_error($wp_error)
     {
-
         $chat_id = fatal_error_sentinel()->getConfig('telegram_chat_id', '');
         if (empty($chat_id)) {
             return;
         }
-        
-        $website = get_bloginfo('name').' ('.get_bloginfo('url').')';
+
+        $errorToText = sprintf("Ошибка отправки почты: %s", $wp_error->get_error_message());
+
+        self::send_telegram_message($chat_id, $errorToText);
+    }
+
+    public static function send_error($error)
+    {
+        $chat_id = fatal_error_sentinel()->getConfig('telegram_chat_id', '');
+        if (empty($chat_id)) {
+            return;
+        }
 
         $errorToText = self::format_error_to_text($error);
 
