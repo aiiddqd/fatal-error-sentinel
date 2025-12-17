@@ -2,7 +2,7 @@
 
 namespace FatalErrorSentinel;
 
-// BetterStackService::init();
+BetterStackService::init();
 
 class BetterStackService
 {
@@ -56,7 +56,21 @@ class BetterStackService
                     esc_attr(fatal_error_sentinel()->getConfigFieldName('betterstack_enabled')),
                     $checked
                 );
-                echo '<p class="description">Check to enable BetterStack Logs integration for fatal errors.</p>';
+                echo '<p class="description">Check to enable BetterStack Logs after checking the checklist below.</p>';
+                ob_start();
+                ?>
+                    <div>
+                        <br>
+                        <hr>
+                        <strong>Checklist:</strong>
+                        <ul>
+                            <li>- Create a BetterStack Logs account</li>
+                            <li>- Create a Logs Source (HTTP)</li>
+                            <li>- Copy the Source Token and paste it below</li>
+                            <li>- Copy the Logs URL and paste it below</li>
+                        </ul>
+                    </div>
+                <?php 
             },
             'fatal-error-sentinel',
             'fatal_error_sentinel_betterstack_settings'

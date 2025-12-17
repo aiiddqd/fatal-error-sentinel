@@ -40,7 +40,7 @@ class EmailService
         }
 
         $website = get_bloginfo('url').' ('.get_bloginfo('name').')';
-        if ($_SERVER['REQUEST_URI']) {
+        if (isset($_SERVER['REQUEST_URI'])) {
             $request = $_SERVER['REQUEST_URI'];
         } else {
             $request = 'unknown';

@@ -164,11 +164,15 @@ final class Plugin
             $this->send_error($error);
         }, 11);
 
-        // add_filter('wp_php_error_message', function ($message, $error) {
-        //     $this->send_error($error);
+        add_action('wp_mail_failed', function ($wp_error) {
+            if ($this->getConfig('telegram_enabled', false)) {
+                // TelegramService::send_error($error);
+            }
 
-        //     return $message;
-        // }, 11, 2);
+            if ($this->getConfig('betterstack_enabled', false)) {
+                // BetterStackService::sendLog($data);
+            }
+        });
     }
 
     /**
