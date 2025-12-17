@@ -1,22 +1,26 @@
-# BetterStack Logs for WordPress and WooCommerce
+# Fatal Error Sentinel
 
-Better Stack lets you see inside any stack, debug any issue, and resolve any incident.
-
-![image](https://github.com/uptimizt/bsp/assets/1852897/e9a7bf93-54ef-4378-8b61-d48da307a8a4)
-
+Monitoring fatal errors and failed email deliveries in WordPress and sending alerts to Email, Telegram and BetterStack Logs.
 
 # install
 ```
-wp plugin install https://github.com/uptimizt/bsp/archive/master.zip --force --activate
+wp plugin install https://github.com/aiiddqd/fatal-error-sentinel/archive/master.zip --force --activate
 ```
 
-1. get token from https://logs.betterstack.com/
-2. add source to BS Logs and get token (choose PHP as platform)
-3. add const `define('BETTERSTACK_LOGS_SOURCE_TOKEN', "token");` to wp-config.php
+# features
 
+## Email Notifications
+Send email notifications on fatal error.
+
+## Telegram Notifications
+Send Telegram notifications on fatal error and failed email delivery.
+
+## BetterStack Logs
+
+Send logs to BetterStack Logs on fatal error and failed email delivery.
+
+![image](https://github.com/uptimizt/bsp/assets/1852897/e9a7bf93-54ef-4378-8b61-d48da307a8a4)
 
 # todo
-- add filter for extend log
-- add setting page to save token in options
-- add other settings
-- improve other features
+- beta testing
+- improve documentation
