@@ -2,19 +2,19 @@
 
 namespace FatalErrorSentinel;
 
-BetterStackService::init();
+// BetterStackService::init();
 
 class BetterStackService
 {
     public static function init()
     {
-        add_action('admin_init', [self::class, 'add_settings']);
+        add_action('admin_init', [self::class, 'add_settings'], 30);
     }
 
     public static function sendLog($data)
     {
         $json = json_encode($data);
-        $host = Plugin::getConfig('betterstack_url', '');
+        $host = fatal_error_sentinel()->getConfig('betterstack_url', '');
         //check $host has https or domain
         if (empty($host) || (! str_starts_with($host, 'https://') && ! str_starts_with($host, 'http://'))) {
             $host = 'https://' . $host;
@@ -22,7 +22,7 @@ class BetterStackService
 
         $result = wp_remote_post($host, [
             'headers' => [
-                'Authorization' => 'Bearer '.Plugin::getConfig('betterstack_token'),
+                'Authorization' => 'Bearer '.fatal_error_sentinel()->getConfig('betterstack_token'),
                 'Content-Type' => 'application/json'
             ],
             'body' => $json,
@@ -50,10 +50,10 @@ class BetterStackService
             'betterstack_enabled',
             'Enable BetterStack Logs Integration',
             function () {
-                $checked = Plugin::getConfig('betterstack_enabled', false) ? 'checked' : '';
+                $checked = fatal_error_sentinel()->getConfig('betterstack_enabled', false) ? 'checked' : '';
                 printf(
                     '<input type="checkbox" name="%s" value="1" %s>',
-                    esc_attr(Plugin::getConfigFieldName('betterstack_enabled')),
+                    esc_attr(fatal_error_sentinel()->getConfigFieldName('betterstack_enabled')),
                     $checked
                 );
                 echo '<p class="description">Check to enable BetterStack Logs integration for fatal errors.</p>';
@@ -68,8 +68,8 @@ class BetterStackService
             function () {
                 printf(
                     '<input type="text" name="%s" value="%s" class="regular-text">',
-                    esc_attr(Plugin::getConfigFieldName('betterstack_token')),
-                    esc_attr(Plugin::getConfig('betterstack_token', ''))
+                    esc_attr(fatal_error_sentinel()->getConfigFieldName('betterstack_token')),
+                    esc_attr(fatal_error_sentinel()->getConfig('betterstack_token', ''))
                 );
                 echo '<p class="description">Enter the BetterStack Logs Source Token used to send logs. You can find this token in your BetterStack Logs account.</p>';
             },
@@ -84,8 +84,8 @@ class BetterStackService
             function () {
                 printf(
                     '<input type="text" name="%s" value="%s" class="regular-text">',
-                    esc_attr(Plugin::getConfigFieldName('betterstack_url')),
-                    esc_attr(Plugin::getConfig('betterstack_url', ''))
+                    esc_attr(fatal_error_sentinel()->getConfigFieldName('betterstack_url')),
+                    esc_attr(fatal_error_sentinel()->getConfig('betterstack_url', ''))
                 );
                 echo '<p class="description">Enter the BetterStack Logs URL';
             },
